@@ -5,3 +5,6 @@ out
 *.log
 .DS_Store
 .vscode
+
+# local config — keep your TS host/liveboard private
+src/app/config.ts

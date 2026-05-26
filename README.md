@@ -4,12 +4,19 @@ Minimal Next.js app demonstrating the `preRenderId + fullHeight + hidden parent 
 
 ## Setup
 
-1. Edit `src/app/config.ts` and fill in your ThoughtSpot host + liveboard ID:
+1. Copy the config template and fill in your ThoughtSpot host + liveboard ID:
+
+```bash
+cp src/app/config.example.ts src/app/config.ts
+# then edit src/app/config.ts
+```
 
 ```ts
 export const THOUGHTSPOT_HOST = "https://your-instance.thoughtspot.cloud";
 export const LIVEBOARD_ID = "your-liveboard-id";
 ```
+
+(`config.ts` is gitignored so your host/IDs stay private.)
 
 2. Install dependencies and run:
 
