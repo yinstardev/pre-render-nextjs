@@ -5,78 +5,86 @@ import { init, AuthType } from "@thoughtspot/visual-embed-sdk";
 import { LiveboardEmbed } from "@thoughtspot/visual-embed-sdk/react";
 import { THOUGHTSPOT_HOST, LIVEBOARD_ID } from "./config";
 
+// Initialize the SDK at module-load time.
+//
+// Why not in useEffect?
+//   React runs child effects BEFORE parent effects. LiveboardEmbed's own
+//   useEffect creates the TsEmbed instance, which calls getThoughtSpotHost().
+//   If we init() inside LiveboardRepro's useEffect, the child runs first and
+//   throws "Error parsing ThoughtSpot host" before our init() ever fires.
+//
+// This module is only loaded on the client (page.tsx imports it via
+// `dynamic(..., { ssr: false })`), so calling init() at module scope is safe.
+init({
+  thoughtSpotHost: THOUGHTSPOT_HOST,
+  authType: AuthType.None,
+});
+
 /**
  * Client-only component that holds the actual repro.
  * Loaded via `dynamic(..., { ssr: false })` from the page so the SDK
  * is never imported on the server (no SSR warnings, no flicker).
  */
 export default function LiveboardRepro() {
-  // Initialize the ThoughtSpot SDK once on mount
-  useEffect(() => {
-    init({
-      thoughtSpotHost: THOUGHTSPOT_HOST,
-      authType: AuthType.None,
-    });
-  }, []);
 
   // Mutation observer: log every style write to wrapper/placeholder
-  useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((m) => {
-        const target = m.target as HTMLElement;
-        if (
-          m.attributeName === "style" &&
-          target.id &&
-          (target.id.includes("tsEmbed-pre-render-wrapper") ||
-            target.id.includes("tsEmbed-pre-render-placeholder"))
-        ) {
-          const type = target.id.includes("wrapper") ? "📦 WRAPPER" : "📍 PLACEHOLDER";
-          const shortId = target.id.slice(-12);
-          const hasZero = target.style.cssText.includes("0px");
-          // eslint-disable-next-line no-console
-          console.log(
-            `${type} ${shortId} →`,
-            `w=${target.style.width || "?"} h=${target.style.height || "?"}`,
-            hasZero ? "⚠️ HAS 0px" : "",
-          );
-        }
-      });
-    });
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["style"],
-      subtree: true,
-    });
-    return () => observer.disconnect();
-  }, []);
+  // useEffect(() => {
+  //   const observer = new MutationObserver((mutations) => {
+  //     mutations.forEach((m) => {
+  //       const target = m.target as HTMLElement;
+  //       if (
+  //         m.attributeName === "style" &&
+  //         target.id &&
+  //         (target.id.includes("tsEmbed-pre-render-wrapper") ||
+  //           target.id.includes("tsEmbed-pre-render-placeholder"))
+  //       ) {
+  //         const type = target.id.includes("wrapper") ? "📦 WRAPPER" : "📍 PLACEHOLDER";
+  //         const shortId = target.id.slice(-12);
+  //         const hasZero = target.style.cssText.includes("0px");
+  //         // eslint-disable-next-line no-console
+  //         console.log(
+  //           `${type} ${shortId} →`,
+  //           `w=${target.style.width || "?"} h=${target.style.height || "?"}`,
+  //           hasZero ? "⚠️ HAS 0px" : "",
+  //         );
+  //       }
+  //     });
+  //   });
+  //   observer.observe(document.body, {
+  //     attributes: true,
+  //     attributeFilter: ["style"],
+  //     subtree: true,
+  //   });
+  //   return () => observer.disconnect();
+  // }, []);
 
   const [showLiveboard, setShowLiveboard] = useState(false);
   const embedRefWithPreRender = useRef<any>(null);
   const embedRefWithoutPreRender = useRef<any>(null);
 
-  const manualSync = () => {
-    if (embedRefWithPreRender.current?.syncPreRenderStyle) {
-      embedRefWithPreRender.current.syncPreRenderStyle();
-      // eslint-disable-next-line no-console
-      console.log("✅ Called syncPreRenderStyle() manually");
-    } else {
-      // eslint-disable-next-line no-console
-      console.log("❌ No ref to embed yet");
-    }
-  };
+  // const manualSync = () => {
+  //   if (embedRefWithPreRender.current?.syncPreRenderStyle) {
+  //     embedRefWithPreRender.current.syncPreRenderStyle();
+  //     // eslint-disable-next-line no-console
+  //     console.log("✅ Called syncPreRenderStyle() manually");
+  //   } else {
+  //     // eslint-disable-next-line no-console
+  //     console.log("❌ No ref to embed yet");
+  //   }
+  // };
 
-  const inspectWrappers = () => {
-    const wrappers = document.querySelectorAll('[id^="tsEmbed-pre-render-wrapper"]');
-    // eslint-disable-next-line no-console
-    console.log(`Found ${wrappers.length} wrapper(s):`);
-    wrappers.forEach((w) => {
-      // eslint-disable-next-line no-console
-      console.log(w.id, {
-        cssText: (w as HTMLElement).style.cssText,
-        rect: w.getBoundingClientRect(),
-      });
-    });
-  };
+  // const inspectWrappers = () => {
+  //   const wrappers = document.querySelectorAll('[id^="tsEmbed-pre-render-wrapper"]');
+  //   // eslint-disable-next-line no-console
+  //   console.log(`Found ${wrappers.length} wrapper(s):`);
+  //   wrappers.forEach((w) => {
+  //     // eslint-disable-next-line no-console
+  //     console.log(w.id, {
+  //       cssText: (w as HTMLElement).style.cssText,
+  //       rect: w.getBoundingClientRect(),
+  //     });
+  //   });
+  // };
 
   return (
     <div style={{ padding: "1.5rem", maxWidth: "1200px", margin: "0 auto" }}>
@@ -121,17 +129,14 @@ export default function LiveboardRepro() {
         >
           {showLiveboard ? "Hide Liveboard" : "Show Liveboard"}
         </button>
-        <button onClick={manualSync} style={btnStyle("#28a745")}>
+        {/* <button onClick={manualSync} style={btnStyle("#28a745")}>
           Manually call syncPreRenderStyle()
         </button>
         <button onClick={inspectWrappers} style={btnStyle("#6c757d")}>
           Inspect All Wrappers
-        </button>
+        </button> */}
       </div>
 
-      {/* The HIDDEN PARENT — this is the key to the bug.
-          LiveboardEmbed mounts inside a display:none container.
-          When SDK calls syncPreRenderStyle(), getBoundingClientRect returns 0×0. */}
       <div style={{ display: showLiveboard ? "block" : "none" }}>
         <section style={sectionStyle("red")}>
           <header style={headerStyle("#ffe5e5", "#cc0000")}>
