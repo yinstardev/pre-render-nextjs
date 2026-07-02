@@ -53,6 +53,9 @@ liveboard:
     - name: re-bro
       description: ""
       id: 6c279ea9-3fd0-4164-99d1-ce2e1e7408fe
+    - name: tests2
+      description: ""
+      id: 56591133-1885-43b2-875a-9855687e8988
   ordered_chips:
   - name: item type
     type: FILTER
