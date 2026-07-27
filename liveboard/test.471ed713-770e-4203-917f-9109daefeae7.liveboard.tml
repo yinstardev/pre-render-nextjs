@@ -1,0 +1,68 @@
+guid: 471ed713-770e-4203-917f-9109daefeae7
+liveboard:
+  name: test
+  visualizations:
+  - id: Viz_1
+    answer:
+      name: Total sales
+      tables:
+      - id: (Sample) Retail - Apparel
+        name: (Sample) Retail - Apparel
+        fqn: cd252e5c-b552-49a8-821d-3eadaa049cca
+      search_query: "[item type].jackets [sales]"
+      answer_columns:
+      - name: Total sales
+      table:
+        table_columns:
+        - column_id: Total sales
+          show_headline: false
+        ordered_column_ids:
+        - Total sales
+        client_state: ""
+      chart:
+        type: KPI
+        chart_columns:
+        - column_id: Total sales
+        axis_configs:
+        - "y":
+          - Total sales
+        client_state: ""
+      display_mode: CHART_MODE
+    viz_guid: c17fb297-5998-487d-b55c-7c0bdc3464fe
+  filters:
+  - column:
+    - item type
+    oper: in
+    values:
+    - Dresses
+    - Headwear
+    is_mandatory: false
+    is_single_value: false
+    display_name: ""
+  layout:
+    tabs:
+    - name: re-bro
+      description: ""
+      id: 6c279ea9-3fd0-4164-99d1-ce2e1e7408fe
+    - name: tests2
+      description: ""
+      id: 56591133-1885-43b2-875a-9855687e8988
+  ordered_chips:
+  - name: item type
+    type: FILTER
+  style:
+    style_properties:
+    - name: lb_border_type
+      value: CURVED
+    - name: lb_brand_color
+      value: LBC_A
+    - name: hide_group_title
+      value: "false"
+    - name: hide_group_description
+      value: "true"
+    - name: hide_group_tile_description
+      value: "false"
+    - name: hide_tile_description
+      value: "false"
+    - name: kpi_hero_font_size
+      value: M

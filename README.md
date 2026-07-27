@@ -1,5 +1,6 @@
 # TSE PreRender 0×0 Wrapper Bug — Minimal Repro
 
+
 Minimal Next.js app demonstrating the `preRenderId + fullHeight + hidden parent = 0×0 wrapper` bug in `@thoughtspot/visual-embed-sdk`.
 
 ## Setup
